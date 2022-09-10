@@ -1,6 +1,7 @@
 import express from 'express';
 import {MongoClient} from "mongodb";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
 
 dotenv.config();
 
@@ -19,6 +20,12 @@ async function createConnection() {
 const client = await createConnection();
 
 app.use(express.json());
+
+async function genPassword(password) {
+	const salt = await bcrypt.genSalt(10)
+	const hashedPassword = await bcrypt.hash(password, salt);
+	return(hashedPassword);
+}
 
 app.post('/post-orphanages', async function (req, res) {
 	const AllOrphanages = req.body;
@@ -45,6 +52,44 @@ app.get('/names', async function (req, res) {
 		.find({})
 		.toArray();
 	res.send(names.filter((warehouse) => warehouse.isWarehouse === "Y").map((warehouse) => warehouse.name));
+});
+
+app.post('/register', async function (req, res) {
+	const {name, phoneNo, emailId, password} = req.body;
+	const presentInDb = await client
+		.db("Sukoon")
+		.collection("Donors")
+		.findOne({$or:[{phoneNo: phoneNo}, {emailId: emailId}]});
+	if (presentInDb) {
+		res.send("Already registered!");
+	}
+	else {
+		const hashedPassword = await genPassword(password);
+		const newUser = {name: name, phoneNo: phoneNo, emailId: emailId, password: hashedPassword};
+		const profile = await client
+			.db("Sukoon")
+			.collection("Donors")
+			.insertOne(newUser);
+		res.send(profile);
+	}
+});
+
+app.post('/login', async function (req, res) {
+	const {phoneNo, password} = req.body;
+	const validUser = await client
+		.db("Sukoon")
+		.collection("Donors")
+		.findOne({phoneNo: phoneNo});
+	console.log(validUser);
+	if(!validUser) {
+		res.send("Invalid Credentials");
+	}
+	else {
+		const actualPassword = validUser.password;
+		// console.log(actualPassword);
+		const isLoggedIn = await bcrypt.compare(actualPassword, password);
+		res.send(isLoggedIn);
+	}
 });
 
 // app.delete('/remove-id', async function (req, res) {
