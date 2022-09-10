@@ -87,8 +87,13 @@ app.post('/login', async function (req, res) {
 	else {
 		const actualPassword = validUser.password;
 		// console.log(actualPassword);
-		const isLoggedIn = await bcrypt.compare(actualPassword, password);
-		res.send(isLoggedIn);
+		const isLoggedIn = await bcrypt.compare(password, actualPassword);
+		if (isLoggedIn) {
+			res.send("Logged In successfully");
+		}
+		else {
+			res.send("Invalid Credentials");
+		}
 	}
 });
 
