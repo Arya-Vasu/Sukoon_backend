@@ -2,7 +2,7 @@ import express from 'express';
 import {MongoClient} from "mongodb";
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT;
 
 const MONGO_URL = "mongodb+srv://vasuarya:aeiou12345@cluster0.orutj.mongodb.net/?retryWrites=true&w=majority";
 
