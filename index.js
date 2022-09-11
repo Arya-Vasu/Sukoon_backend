@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 
 dotenv.config();
+app.use(cors());
 
 const app = express();
 const PORT = process.env.PORT;
@@ -86,7 +87,6 @@ app.post('/login', async function (req, res) {
 	}
 	else {
 		const actualPassword = validUser.password;
-		// console.log(actualPassword);
 		const isLoggedIn = await bcrypt.compare(password, actualPassword);
 		if (isLoggedIn) {
 			res.send("Logged In successfully");
