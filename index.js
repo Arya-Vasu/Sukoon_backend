@@ -2,9 +2,9 @@ import express from 'express';
 import {MongoClient} from "mongodb";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import cors from "cors";
 
 dotenv.config();
-app.use(cors());
 
 const app = express();
 const PORT = process.env.PORT;
@@ -20,6 +20,7 @@ async function createConnection() {
 
 const client = await createConnection();
 
+app.use(cors());
 app.use(express.json());
 
 async function genPassword(password) {
