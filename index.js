@@ -63,7 +63,7 @@ app.post('/register', async function (req, res) {
 		.collection("Donors")
 		.findOne({$or:[{phoneNo: phoneNo}, {emailId: emailId}]});
 	if (presentInDb) {
-		res.send({response: "Already registered!"});
+		res.send({"err": {data: "Already registered!"}});
 	}
 	else {
 		const hashedPassword = await genPassword(password);
@@ -84,16 +84,16 @@ app.post('/login', async function (req, res) {
 		.findOne({phoneNo: phoneNo});
 	// console.log(validUser);
 	if(!validUser) {
-		res.send({response: "Invalid Credentials"});
+		res.send({"err": {data: "Invalid Credentials!"}});
 	}
 	else {
 		const actualPassword = validUser.password;
 		const isLoggedIn = await bcrypt.compare(password, actualPassword);
 		if (isLoggedIn) {
-			res.send({response: "Logged In successfully"});
+			res.send({"resp": {data: "Logged In successfully!"}});
 		}
 		else {
-			res.send({response: "Invalid Credentials"});
+			res.send({"err": {data: "Invalid Credentials!"}});
 		}
 	}
 });
