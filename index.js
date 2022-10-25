@@ -84,7 +84,7 @@ app.post('/login', async function (req, res) {
 		.findOne({phoneNo: phoneNo});
 	// console.log(validUser);
 	if(!validUser) {
-		res.status(400);
+		res.json({"err": {data: "Invalid Credentials!"}});
 	}
 	else {
 		const actualPassword = validUser.password;
@@ -93,7 +93,7 @@ app.post('/login', async function (req, res) {
 			res.json({"resp": {data: "Logged In successfully!"}});
 		}
 		else {
-			res.status(400);
+			res.json({"err": {data: "Invalid Credentials!"}});
 		}
 	}
 });
