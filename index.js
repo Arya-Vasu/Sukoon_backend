@@ -78,22 +78,27 @@ app.post('/register', async function (req, res) {
 
 app.post('/login', async function (req, res) {
 	const {phoneNo, password} = req.body;
+	let error = {data: "Invalid Credentials!"};
+	let succ = {data: "Logged In successfully!"};
 	const validUser = await client
 		.db("Sukoon")
 		.collection("Donors")
 		.findOne({phoneNo: phoneNo});
 	// console.log(validUser);
 	if(!validUser) {
-		res.json({"err": {data: "Invalid Credentials!"}});
+		// res.json({"err": {data: "Invalid Credentials!"}});
+		res.send(error);
 	}
 	else {
 		const actualPassword = validUser.password;
 		const isLoggedIn = await bcrypt.compare(password, actualPassword);
 		if (isLoggedIn) {
-			res.json({"resp": {data: "Logged In successfully!"}});
+			// res.json({"resp": {data: "Logged In successfully!"}});
+			res.send(succ);
 		}
 		else {
-			res.json({"err": {data: "Invalid Credentials!"}});
+			// res.json({"err": {data: "Invalid Credentials!"}});
+			res.send(error);
 		}
 	}
 });
