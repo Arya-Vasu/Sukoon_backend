@@ -75,7 +75,6 @@ app.post('/register', async function (req, res) {
 			.collection("Donors")
 			.insertOne(newUser);
 		res.send(profile);
-		res.send(succ);
 	}
 });
 
