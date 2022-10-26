@@ -58,12 +58,14 @@ app.get('/names', async function (req, res) {
 
 app.post('/register', async function (req, res) {
 	const {name, phoneNo, emailId, password} = req.body;
+	let error = {data: "Already registered!"};
+	let succ = {data: "Registered successfully!"};
 	const presentInDb = await client
 		.db("Sukoon")
 		.collection("Donors")
 		.findOne({$or:[{phoneNo: phoneNo}, {emailId: emailId}]});
 	if (presentInDb) {
-		res.json({"err": {data: "Already registered!"}});
+		res.send(error);
 	}
 	else {
 		const hashedPassword = await genPassword(password);
@@ -73,6 +75,7 @@ app.post('/register', async function (req, res) {
 			.collection("Donors")
 			.insertOne(newUser);
 		res.send(profile);
+		res.send(succ);
 	}
 });
 
@@ -84,20 +87,16 @@ app.post('/login', async function (req, res) {
 		.db("Sukoon")
 		.collection("Donors")
 		.findOne({phoneNo: phoneNo});
-	// console.log(validUser);
 	if(!validUser) {
-		// res.json({"err": {data: "Invalid Credentials!"}});
 		res.send(error);
 	}
 	else {
 		const actualPassword = validUser.password;
 		const isLoggedIn = await bcrypt.compare(password, actualPassword);
 		if (isLoggedIn) {
-			// res.json({"resp": {data: "Logged In successfully!"}});
 			res.send(succ);
 		}
 		else {
-			// res.json({"err": {data: "Invalid Credentials!"}});
 			res.send(error);
 		}
 	}
